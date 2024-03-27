@@ -68,7 +68,6 @@ def main(_):
     )
 
     accelerator = Accelerator(
-        log_with="wandb",
         mixed_precision=config.mixed_precision,
         project_config=accelerator_config,
         # we always accumulate gradients across timesteps; we want config.train.gradient_accumulation_steps to be the
@@ -80,8 +79,7 @@ def main(_):
     if accelerator.is_main_process:
         accelerator.init_trackers(
             project_name="ddpo-pytorch",
-            config=config.to_dict(),
-            init_kwargs={"wandb": {"name": config.run_name}},
+            config=config.to_dict()
         )
     logger.info(f"\n{config}")
 
@@ -393,20 +391,20 @@ def main(_):
                 )
                 pil = pil.resize((256, 256))
                 pil.save(os.path.join(tmpdir, f"{i}.jpg"))
-            accelerator.log(
-                {
-                    "images": [
-                        wandb.Image(
-                            os.path.join(tmpdir, f"{i}.jpg"),
-                            caption=f"{prompt:.25} | {reward:.2f}",
-                        )
-                        for i, (prompt, reward) in enumerate(
-                            zip(prompts, rewards)
-                        )  # only log rewards from process 0
-                    ],
-                },
-                step=global_step,
-            )
+            # accelerator.log(
+            #     {
+            #         "images": [
+            #             wandb.Image(
+            #                 os.path.join(tmpdir, f"{i}.jpg"),
+            #                 caption=f"{prompt:.25} | {reward:.2f}",
+            #             )
+            #             for i, (prompt, reward) in enumerate(
+            #                 zip(prompts, rewards)
+            #             )  # only log rewards from process 0
+            #         ],
+            #     },
+            #     step=global_step,
+            # )
 
         # gather rewards across processes
         rewards = accelerator.gather(samples["rewards"]).cpu().numpy()
