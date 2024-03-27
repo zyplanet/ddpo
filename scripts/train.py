@@ -353,7 +353,11 @@ def main(_):
             rewards = executor.submit(reward_fn, images, prompts, prompt_metadata)
             # yield to to make sure reward computation starts
             time.sleep(0)
-            num_steps = len(latents)
+            print("latents shape is ", latents.shape)
+            assert len(latents.shape)==5,"unexpected latents shape {}".format(latents.shape)
+            num_steps = config.sample.num_steps
+            x0traj = torch.stack([latents[
+                        :, num_steps,:,:,:] for _ in range(num_steps)],dim=1)
             samples.append(
                 {
                     "prompt_ids": prompt_ids,
@@ -362,8 +366,7 @@ def main(_):
                     "latents": latents[
                         :, :-1
                     ],  # each entry is the latent before timestep t
-                    "next_latents": torch.stack([latents[
-                        :, -1] for _ in range(num_steps-1)],dim=1),  # each entry is the latent after timestep t
+                    "next_latents": x0traj,  # each entry is the latent after timestep t
                     "log_probs": log_probs,
                     "rewards": rewards,
                 }
