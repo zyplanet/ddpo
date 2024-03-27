@@ -112,9 +112,9 @@ def ddim_step_with_logprob(
 
     # 3. compute predicted original sample from predicted noise also called
     # "predicted x_0" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
-    print(self.config.prediction_type,"prediction type")
-    import sys
-    sys.exit()
+    # print(self.config.prediction_type,"prediction type")
+    # import sys
+    # sys.exit()
     if self.config.prediction_type == "epsilon":
         pred_original_sample = (
             sample - beta_prod_t ** (0.5) * model_output
@@ -189,7 +189,7 @@ def ddim_step_with_logprob(
     #     - torch.log(std_dev_t)
     #     - torch.log(torch.sqrt(2 * torch.as_tensor(math.pi)))
     # )
-    log_prob = -((prev_sample.detach() - prev_sample_mean) ** 2)
+    log_prob = -((prev_sample.detach() - prev_sample_mean) ** 2)/(2 * (std_dev_t**2))
     # mean along all but batch dimension
     log_prob = log_prob.mean(dim=tuple(range(1, log_prob.ndim)))
 
