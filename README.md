@@ -8,7 +8,7 @@ This is an implementation of [Denoising Diffusion Policy Optimization (DDPO)](ht
 Requires Python 3.10 or newer.
 
 ```bash
-cd ddpo-pytorch
+cd ddpo
 conda create -n ddpo python=3.10
 conda activate ddpo
 pip install -e .
